@@ -2,6 +2,9 @@
 Spring boot + mybatis 기술을 사용하여 DB 조회, 수정, 삽입, 삭제 기능을 구현한다.  
 
 ## 1. 배경지식  
+<details markdown="1">
+<summary>접기/펼치기</summary>
+   
 ### (1) ORM (Object Relational Mapping)   
 ORM 에서 Object 는 객체지향 언어의 객체를 의미한다.  
 Ralational 은 관계형 데이터베이스(Relational Database)의 데이터를 의미한다.  
@@ -141,3 +144,73 @@ ADD CONSTRAINT FK_Student_Department
 FOREIGN KEY (departmentId) REFERENCES Department(id)
 ON DELETE CASCADE;
 ```
+</details>
+
+
+## 2. mybatis1 프로젝트    
+
+<details markdown="1">
+<summary>접기/펼치기</summary> 
+
+### (1) 프로젝트 생성    
+
+### (2) pom.xml - Maven 설정 파일   
+pom.xml 파일의 <dependency> 태그들에 있는 항목들을 maven dependency라고 부른다.    
+필요한 라이브러리나 빌드 방법을 설정하는 폴더이다.   
+Maven : 프로젝트 관리 도구 (라이브러리 설치, 빌드)       
+
+파일 하나의 결과 >> 디버깅   
+프로젝트 전체 결과 >> 빌드   
+
+### (3) application.properties - Spring boot 설정 파일   
+
+`spring.mvc.view.prefix=/WEB-INF/views/`  
+뷰 파일이 위치할 폴더를 지정한다.    
+
+`spring.mvc.view.suffix=.jsp`  
+뷰 파일의 확장자를 지정한다.  
+
+`spring.datasource.driver-class-name=com.mysql.jdbc.Driver`  
+JDBC 드라이버 클래스의 이름을 지정, Mysql JDBC 드라이버 클래스 
+
+`spring.datasource.url=jdbc:mysql://localhost:3306/student1?useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=UTC`  
+DB 서버 IP와 DB 이름 설정, 서버 타임존 설정   
+
+`spring.datasource.username=user1` DB 연결 계정 설정    
+
+`spring.datasource.password=test123` DB 연결 계정 설정     
+  
+`mybatis.type-aliases-package=net.skhu.dto`  
+여기서 net.skhu.dto 는 DB 조회 결과 데이터를 담은 클래스의 패키지를 지정한다.  
+mybatis mapper XML 파일에서 select 태그의 resultType으로 등록된 클래스들의 패키지를 지정한다.    
+예를들어, `<select id="findById" resultType="Student">`    
+select 태그의 resultType으로 등록된 Student 클래스의 패키지는 net.skhu.dto 이어야 한다.   
+
+
+
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
