@@ -55,32 +55,53 @@ Spring boot의 설정 파일 = application.properties
 
 (4) HomeController.java  
 **src/main/java/net/skhu/HomeController.java**  
+```
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller // spring에게 Controller라는 것을 알려주는 것, Controller 어노테이션은 꼭 필요하다. 
+public class HomeController {
+   
+   @RequestMapping("/")   
+    public String index(Model model) { // view 에게 전달될 데이터를 변수 model에 전달 
+        model.addAttribute("message", "좋은 아침");
+        return "index"; // view의 이름이 index, view의 이름이나 리다이렉트 url을 반환한다.
+    }
+}
+```
+
+(5) index.jsp  
+**src/main/webapp/WEB-INF/views/index.jsp (view를 jsp로 구현)**   
+
+**MVC : Model View Controller**    
+(모형, 사람이 볼 수 있는 출력을 담당하여 보여주는 객체, 지휘/통제)       
+가장 먼저 나온 객체지향 설계 패턴이다.    
+
+jsp 에서는 WebContant 아래의 파일들을 url로 요청할 수 있다.    
+WEB-INF는 url로 웹 브라우저로 요청해서 받으면 안되는 파일을 모아두는 곳이다.  
+예) 서버 설정, 웹 브라우저에서 사용하는 데이터, 웹 브라우저 실행에 필요한 라이브러리 등    
+즉, spring 에서는 url 요청을 view가 받지 않고 Contrllor가 받아야 한다.   
+
+(6) 실행 - http://localhost:8088  
 
 
+## 3. 정적 파일    
+Spring Boot App 프로젝트에서 정적 파일들은 (*.css, *.js)  
+src/main/resources/static 폴더에 위치해야 한다.  
 
+(1) common.css  
+**src/main/resources/static/common.css**  
+```
+h1 { color: red }
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(2) common.js    
+```
+$(function() {
+	$("h1").click(function() {
+		alert("clicked");
+	})
+})
+```
+h1 태그를 클릭하면, alert 대화상자가 나타난다.    
