@@ -1,5 +1,5 @@
 # Spring Boot App 실행   
-1. 개요     
+## 1. 개요     
 - Spring Boot App  
 Spring Boot App 실행 기능을 사용하면, spring 프로젝트를 좀 더 빠르게 실행해 볼 수 있다.    
 
@@ -9,5 +9,78 @@ tomcat 서버나 Pivotal tc Server 없이도 실행 가능하다.
 프로젝트 빌드 결과 파일에 내장된 서버를 embedded tomcat 이라고 부른다.    
 
 - spring-boot-devtools          
-소스코드를 수정한 후 웹브라우저를 새로고침하면, 수정된 내용이 즉기 반영되도록 해주는 도구이다.       
+소스코드를 수정한 후 웹브라우저를 새로고침하면, 수정된 내용이 즉기 반영되도록 해주는 도구이다.    
+    
+- Spring framework = spring core + spring web mvc   
+
+## 2. 프로젝트   
+(1) 프로젝트 생성 과정 생략  
+
+(2) pom.xml 수정  
+
+dependency 항목에 필요한 라이브러리를 등록하면 maven이 자동으로 다운로드 해준다.   
+Maven은 프로젝트 생성, 빌드, 실행까지 종합관리해주는 프로젝트 개발 도구   
+Maven 설정 파일 = pom.xaml  
+
+추가된 maven dependency 항목은 다음과 같은 라이브러리를 프로젝트에 포함하기 위함이다.     
+
+- JSTL(JSP Standard Tag Lib)    
+JSTL 확장 태그를 사용하기 위해 필요한 라이브러리    
+예를 들어,   
+<c:forEach> - 반복문 대신 사용할 수 있는 태그    
+<c:if> - if문 대신 사용할 수 있는 태그     
+
+- tomcat-embed-jasper  
+스프링 부트 앱에는 톰캣 서버가 내장되어 있다.    
+톰캣 서버는 servlet container 이다.  
+톰캣 서버는 servlet을 실행하는 서버이다.   
+톰캣에서 JSP 파일은, 먼저 servlet이로 변환(컴파일)된 후 실행된다.  </br></br>
+tomcat-embed-jasper는 JSP 파일을 servlet으로 변환하는 컴파일러이다.  
+이 것을 프로젝트에 추가하지 않고 실행하면, JSP 파일이 실행되지 않고, 웹브라우저에서 다운로드 될 것이다.   
+톰캣은 servlet만 실행할뿐, 다른 파일들은 웹브라우저로 그대로 전송하기 때문이다.  
+
+(3) application.properties  
+**src/main/resources**  
+```
+spring.mvc.view.prefix=/WEB-INF/views/
+spring.mvc.view.suffix=.jsp
+server.port = 8088
+```
+Spring boot의 설정 파일 = application.properties  
+
+내장된 톰캣 서버가 실행될 디폴트 포트는 8080인데, 8080 포트를 사용하는 다른 서버와 충돌이 발생할 확률이 높기 때문에  
+8088 포트로 변경했다.  
+
+(이미 사용중이라면, 'port 8080 failed to start. The port may already be in use' 포트 충돌 에러가 발생)  
+
+(4) HomeController.java  
+**src/main/java/net/skhu/HomeController.java**  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
