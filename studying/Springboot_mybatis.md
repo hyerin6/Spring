@@ -1,5 +1,5 @@
 # Spring boot and mybatis  
-#### Spring boot + mybatis 기술을 사용하여 DB 조회, 수정, 삽입, 삭제 기능을 구현한다.  
+Spring boot + mybatis 기술을 사용하여 DB 조회, 수정, 삽입, 삭제 기능을 구현한다.  
 
 ## 1. 배경지식  
 ### (1) ORM (Object Relational Mapping)   
@@ -7,7 +7,7 @@ ORM 에서 Object 는 객체지향 언어의 객체를 의미한다.
 Ralational 은 관계형 데이터베이스(Relational Database)의 데이터를 의미한다.  
 Mapping이 의미하는 것은 객체지향 언어의 객체와 관계형 데이터를 서로 변환해 준다는 것이다.  
 
-**ORM 이란?**
+**ORM 이란?**  
    관계형 데이터베이스에서 조회한 데이터를 Java 객체로 변환하여 리턴해 주고,   
    Java 객체를 관계형 데이터베이스에 저장해 주는    
    라이브러리 혹은 기술을 말한다.    
@@ -54,3 +54,90 @@ Oracle, MS SQL Server, mySQL 등 DBMS 마다 SQL 문법이 약간씩 차이가 �
 그래서 DBMS를 바꾸면 SQL 문도 수정해야 하는 불편함이 있다.  
 SQL 문을 사용하지 않는 Hibernate, JPA에는 이런 문제가 없다.  
 
+### (3) mybatis mapper   
+데이터베이스는 테이블에 대한 SELECT / INSERT / UPDATE / DELETE SQL 명령들을 mybatis mapper에 구현한다.  
+보통 데이터베이스 테이블 한 개당 mybatis mapper 한 개를 구현한다.  
+
+mybatis mapper는 Java Interface 파일 한 개와, XML 파일 한 개로 구현된다.   
+
+DB 테이블에 대한 조회, 삽입, 수정, 삭제 SQL 명령을 mapper XML 파일에 구현한다.   
+그리고 이 명령을 호출하기 위한 Java 메소드를 mapper Java Interface 파일에 선언한다.  
+
+mapper 메소드를 호출하기 위한 Java 메소드를 Java Interface에 선언하기만 하면 된다.    
+하지만 이 메소드를 구현(implements)할 필요는 없다.     
+즉, Mapper Java Interface만 만들면되고, 이 인터페이스는 mybatis spring이 자동으로 구현해주기 때문에 구현할 필요는 없다.   
+
+### (4) Auto Increment 필드 (identity 필드)  
+Student 테이블의 기본키(primary key)는 id 필드이다.   
+MySQL에서 Student 테이블을 생성할 때, id 필드를 Auto Increment 필드로 지정하였다.  
+
+Auto Increment 필드의 값은 1부터 시작하는 일련번호이다.  
+테이블에 새 레코드를 insert 할 때, 이 필드의 값에 일련번호가 자동으로 부여된다.   
+
+Auto Increment 필드의 값인 자동으로 부여되기 때문에,  
+insert나 update SQL 문에서 이 필드의 값을 저장하는 것이 에러이다.  
+
+### (5) Referential Integrity Constraint 참조 무결성 제약   
+Student 테이블의 departmentId 필드는 외래키(foreign key) 이다.  
+이 필드의 값은 department 테이블의 기본키인 id 필드값과 일치해야 한다.  
+Student 테이블과 Department 테이블을 조인할 때, departmentId 필드를 사용한다.  
+
+```
+SELECT s.*, d.departmentName
+FROM Student s LEFT JOIN department d ON s.departmentId = d.id
+```
+Department 테이블에서 레코드를 한 개 삭제 하려고 할 때,   
+만약 Student 테이블의 어떤 레코드의 departmentId 필드 값이,   
+그 삭제하려는 Department 레코드의 id 필드 값과 일치한다면,  
+삭제는 실패하고 에러가 발생한다.  
+이 에러를 참조 무결성 제약조건 위반(referential intergity constraint violation)이라고 부른다.  
+쉽게 표현하자면, 국어국문학과 소속 학생들이 존재한다면, 국어국문학과를 삭제할 수 없다는 얘기다.   
+
+Register 테이블에 외래키인 studentId 필드가 들어있다.  
+그래서 Student 테이블의 레코드를 삭제하려 할 때, 참조 무결성 제약조건 위반 에러가 발생할 수 있다.  
+쉽게 표현하자면, 201132050 학생의 수강신청 내역이 존재한다면, 그 학생을 삭제할 수 없다는 얘기다.  
+
+데이터베이스가 참조 무결성 제약조건을 실시간 검사해 준다.  
+테이블을 생성할 때, 데이터베이스가 참조 무결성 제약조건을 설정해 주는 것이 바람직하다.  
+
+참조 무결성을 제약조건을 외래키 제약조건이라고도 부른다.  
+
+Student 테이블에 FK_Student_Department 이름의 외래키 제약조건이 이미 설정되어 있다.  
+이 외래키 제약조건을 삭제하는 명령은 다음과 같다.  
+```
+ALTER TABLE Student
+DROP FOREIGN KEY FK_Student_Department;
+```
+
+**외래키 제약조건 생성하기**    
+Student 테이블의 departmentId 필드와 Department 테이블의 id 필드 사이에  
+외래키 제약조건을 생성하는 명령은 다음과 같다.  
+```
+ALTER TABLE Student
+ADD CONSTRAINT FK_Student_Department
+FOREIGN KEY (departmentId) REFERENCES Department(id);
+```
+제약조건의 이름은 FK_Student_Department 이다.  
+외래키는 Student 테이블의 departmentId 필드이다.  
+이 필드는 Department 테이블의 id 필드를 참조(references)한다.  
+
+### (6) 참조 무결성 제약조건 위반 피하기  
+- 먼저 삭제하기  
+Department 테이블의 레코드를 삭제하기 전에, 먼저 그 레코드를 참조하는 Student 레코드들을 전부 삭제한다.  
+예) 소프트웨어공학과를 없애려면 학생테이블의 소프트웨어공학과 학생들을 먼저 지우고 지워야 한다.   
+```
+DELETE FROM Student WHERE departmentId = 2;
+DELETE FROM Department WHERE id = 2;
+```
+
+- Cascade Delete 옵션 
+외래키 제약 조건을 생성할 때, Casecade Delete 옵션을 지정할 수 있다.  
+이 옵션이 지정된 경우에는, Department 테이블의 레코드를 삭제할 때,  
+그 레코드를 참조하는 Student 레코드들이 전부 자동으로 삭제된다.  
+(자동으로 지워지도록 미리 설정 / 장점 : 편하다. / 단점 : 실수로 레코드 전부를 지울 수 있다.)  
+```
+ALTER TABLE Student
+ADD CONSTRAINT FK_Student_Department
+FOREIGN KEY (departmentId) REFERENCES Department(id)
+ON DELETE CASCADE;
+```
