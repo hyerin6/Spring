@@ -3,7 +3,7 @@ Spring boot + mybatis 기술을 사용하여 DB 조회, 수정, 삽입, 삭제 �
 
 ## 1. 배경지식  
 <details markdown="1">
-<summary>접기/펼치기</summary>
+<summary>view</summary>
    
 ### (1) ORM (Object Relational Mapping)   
 ORM 에서 Object 는 객체지향 언어의 객체를 의미한다.  
@@ -146,11 +146,12 @@ ON DELETE CASCADE;
 ```
 </details>
 
+<br/>
 
 ## 2. mybatis1 프로젝트    
 
 <details markdown="1">
-<summary>접기/펼치기</summary> 
+<summary>view</summary> 
 
 ### (1) 프로젝트 생성    
 
@@ -185,32 +186,108 @@ DB 서버 IP와 DB 이름 설정, 서버 타임존 설정
 mybatis mapper XML 파일에서 select 태그의 resultType으로 등록된 클래스들의 패키지를 지정한다.    
 예를들어, `<select id="findById" resultType="Student">`    
 select 태그의 resultType으로 등록된 Student 클래스의 패키지는 net.skhu.dto 이어야 한다.   
-
-
-
-
 </details>
 
+<br/>  
 
+## 3. DTO 클래스 구현    
+### (1) Student.java  
+Student 테이블에서 조회한 데이터를 채울 DTO(Data Transfer Object)이다.  
 
+예제에서 Student 테이블에 departmentName은 없지만, Student 테이블에서 조회할 때    
+DepartmentName 필드도 조회하기 때문에 그 조회 결과를 채우기 위해 departmentName 멤버변수를 Student 클래스에 추가하였다.   
 
+### (2) Department.java  
+Department 테이블에서 조회한 데이터를 채울 DTO이다.   
 
+<br/>  
 
+## 4. Mapper 구현 
+ 
+<details markdown="1">  
+<summary>view</summary>  
 
+### (1) StudentMapper.java   
+**src/main/java/net/skhu/mapper/StudentMapper.java**  
+```
+package net.skhu.mapper;
 
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import net.skhu.dto.Student;
 
+@Mapper
+public interface StudentMapper {
+    Student findOne(int id);
+    Student findByStudentNumber(String studentNumber); // 파라미터가 Student 객체
+    List<Student> findAll(); // List type 
+    void insert(Student student);
+    void update(Student student);
+    void delete(int id);
+}
+```
+- Mapper 인터페이스 위에 @Mapper 어노테이션을 작성해준다.    
+- DB 의 Student 테이블에 대한 조회, 삽입, 수정, 삭제 SQL 명령을 StudentMapper.xml 파일에 구현한다.
+그리고 이 명령을 호출하기 위한 메소드를 StudentMapper 인터페이스에 선언한다.  
 
+**StudentMapper 인터페이스의 메소드들의 리턴 타입, 이름, 파마티러 타입에 주목하자.**  
+- 인터페이스의 메소드 이름은 StudentMapper.xml 파일 태그들의 id 애트리뷰트 값과 일치
+- 인터페이스의 메소드의 파라미터는 StudentMapper.xml 파일 태그들의 mybatis 파라미터와 일치  
+- 인터페이스의 메소드들의 리턴 타입은 StudentMapper.xml 파일 태그들의 resultType 애트리뷰트 값과 일치  
 
+### (2) StudentMapper.xml   
 
+DB의 Student 테이블에 대한 조회, 삽입, 수정, 삭제 SQL 명령을 StudentMapper.xml 파일에 구현한다.  
+이 파일은 studentMapper.java와 동일한 폴더에 있어야 한다.  
+SQL 명령문만 제대로 입력하면 java는 자동으로 구현된다.   
 
+**src/main/java/net/skhu/mapper/StudentMapper.xml**   
+```
+<mapper namespace="net.skhu.mapper.StudentMapper">
 
+  <select id="findOne" resultType="Student">
+    SELECT * FROM Student WHERE id = #{id}
+  </select>
+  
+  <select id="findByStudentNumber" resultType="Student">
+    SELECT * FROM Student WHERE studentNumber = #{studentNumber}
+  </select>   
 
+  <select id="findAll" resultType="Student">
+    SELECT s.*, d.departmentName
+    FROM Student s LEFT JOIN department d ON s.departmentId = d.id
+  </select>
 
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT Student (studentNumber, name, departmentId, year)
+    VALUES (#{studentNumber}, #{name}, #{departmentId}, #{year})
+  </insert>
 
+  <update id="update">
+    UPDATE Student SET 
+      studentNumber = #{studentNumber}, 
+      name = #{name}, 
+      departmentId = #{departmentId}, 
+      year = #{year} 
+    WHERE id = #{id}
+  </update>
 
+  <delete id="delete">
+    DELETE FROM Student WHERE id = #{id}
+  </delete>
 
+</mapper>
+```
 
+| xml 예 | 설명 | 
+|:--------|:--------:|
+| resultType="Student" | StudentMapper 인터페이스의 메소드들 리턴타입과 일치해야 한다. | 
+| id="findOne" | StudentMapper 인터페이스의 메소드들 이름과 일치해야 한다. | 
+| id=#{id} | StudentMapper 인터페이스의 메소드 파라미터와 일치해야 한다. | 
 
+java에서는 파라미터가 Student 객체인데 xml에서는 객체의 속성이다.   
+리턴타입도 `List<Student> findAll();` java 에서는 List인데 xml에서는 resultType은 Student이다.   
 
+### (3) mapper 구현 규칙  
 
-
+</details>  
