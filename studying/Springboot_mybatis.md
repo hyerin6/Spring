@@ -288,6 +288,208 @@ SQL 명령문만 제대로 입력하면 java는 자동으로 구현된다.
 java에서는 파라미터가 Student 객체인데 xml에서는 객체의 속성이다.   
 리턴타입도 `List<Student> findAll();` java 에서는 List인데 xml에서는 resultType은 Student이다.   
 
-### (3) mapper 구현 규칙  
+### (3) mapper 구현 규칙    
+#### ⓵ namespace 일치   
+**StudentMapper.xml**  
+`<mapper namespace="net.skhu.mapper.StudentMapper">`    
 
-</details>  
+**StudentMapper.java**  
+``` 
+package net.skhu.mapper;
+
+@Mapper
+public interface StudentMapper {
+   . . .
+}
+```   
+namespace 애트리뷰트 값은 StudentMapper 인터페이스의 이름과 패키지가 정확하게 일치해야 한다.  
+그렇지 않은 경우, StudentMapper bean을 생성할 수 없다는 에러가 발생한다.  
+
+#### ⓶ 메소드 이름 일치   
+XML 파일에서 id 애트리뷰트와 StudentMapper 인터페이스의 메소드 이름과 일치해야 한다.   
+
+#### ⓷ resultType : 패키지  
+**application.properties**  
+`mybatis.type-aliases-package=net.skhu.dto`  
+mybatis mapper XML 파일에서 select 태그의 resultType으로 등록된 클래스들의 패키지를 지정한다.   
+
+**StudentMapper.xml**   
+`<select id="findById" resultType="Student">`   
+select 태그의 resultType으로 등록된 Student 클래스의 패키지는 net.skhu.dto 이어야 한다.    
+
+#### ⓸ resultType : 레코드 한 개 리턴   
+**StudentMapper.java**  
+`Student findOne(int id);`    
+
+**StudentMapper.xml**  
+`<select id="findOne" resultType="Student">`  
+
+id 애트리뷰트 값은 StudentMapper 인터페이스의 메소드 이름과 일치해야 한다.   
+resultType 애트리뷰트 값은 메소드의 리턴 타입과 일치해야 한다.   
+
+이 SQL 명령은 Student 레코드 한 개를 조회한다.    
+조회 결과는 Student 자바 객체에 자동으로 채워져서 리턴된다.  
+
+DB 조회 결과가 자바 객체에 자동으로 채워질 때, 조회 결과 컬럼 제목과 자바 객체의 setter 이름이 일치해야 한다.  
+
+#### ⓹ resultType : 레코드 여러 개 리턴  
+findAll 태그의 SQL 명령은 Student 레코드 여러 개를 조회한다.   
+조회 결과 레코드 각각은 Student 객체에 채워지고 Student 객체는 List<Student> 객체에 채워져서 리턴된다.   
+그래서 findAll 자바 메소드의 리턴 타입은 List<Student>이다.    
+
+예제에서 findAll 메소드의 리턴 타입은 List<Student> 이지만, findAll 태그의 resultType은 Student 임에 주의하자.  
+   
+SQL 조회 결과가 DTO에 자동으로 채워진다.  
+
+#### ⓺ 조회 결과 컬럼명 일치     
+DB 조회 결과가 resultType 자바 객체에 자동으로 채워질 때,  
+조회 결과 컬럼 제목과 resultType 자바 객체의 set 메소드 이름이 일치해야 한다.  
+에러가 발생하지는 않지만 자바 객체에 결과가 채워지지 않는다.   
+
+#### ⓻ mybatis 파라미터 : 파라미터 한 개   
+**StudentMapper.java**  
+``` 
+Student findOne(int id);
+Student findByStudentNumber(String studentNumber);
+void delete(int id);
+``` 
+
+**StudentMapper.xml**  
+```
+<select id="findOne" resultType="Student">
+    SELECT * FROM Student WHERE id = #{id}
+</select>
+    
+<select id="findByStudentNumber" resultType="Student">
+    SELECT * FROM Student WHERE studentNumber = #{studentNumber}
+</select>   
+
+<delete id="delete">
+    DELETE FROM Student WHERE id = #{id}
+</delete>
+```  
+
+#{id}, #{studentNumber} 부분이 mybatis 파라미터이다.  
+메소드를 호출할 때 전달된 파라미터 값이 SQL 문장의 mybatis 파라미터 부분에 채워져서 SQL 문장이 실행된다.    
+
+mybatis 파라미터로 전달할 값이 한 개이고, 값의 타입이 int, long, float, double, boolean 등 기본자료형이나 
+String, Date, Time, Timestamp 클래스 객체인 경우에는 위와 같은 방법으로 구현한다.  
+ 
+여기서 Java 파라미터 변수 이름은 중요하지 않다.    
+중요한 것은 파라미터가 한 개이고, 파라미터 타입이 기본자료형이거나    
+String, Date, Time, Timestamp 클래스 중 하나의 객체이어야 한다는 점이다.    
+
+#### ⓼ mybatis 파라미터 : 파라미터 여러 개   
+#{...} 부분이 mybatis 파라미터이다.  
+
+Java의 파라미터 변수 이름은 중요하지 않고, 
+Java 파라미터 변수의 타입이 DTO 클래스이어야 하고  
+이 클래스의 getter 이름과 mybatis 파라미터의 이름이 일치해야 한다.   
+
+### (4) auto Increment 필드와 insert   
+Student 테이블에 새 레코드를 insert할 때, auto increment 필드인 id 필드 값은 자동으로 부여된다.   
+그래서 insert SQL 문에 id 필드값은 지정하지 않는다.  
+
+insert SQL 문이 실행되어 새 레코드가 저장된 후,
+값이 자동으로 부여된 새 레코드의 id값이 Student 객체의 id 속성에 자동으로 채워진다.   
+
+```
+Student student = new Student();
+student.setStudentNumber("201132091");
+student.setName("홍길동");
+student.setDepartmentId(1);
+student.setYear(1);
+
+System.out.println(student.getId());
+studentMapper.insert(student); // inset하면 mybatis가 id값을 자동으로 채워준다. 
+System.out.println(student.getId());
+```
+줄7에서 출력되는 id 값은 0 이다.  
+Student 객체의 id 멤버 변수에 아직 아무것도 대입되지 않았기 때문이다.  
+
+줄9에서 출력되는 id 값은, 줄8에서 저장된 새 레코드의 id 필드값이다.  
+이 값은 0 이 아니다.  
+
+```
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT Student (studentNumber, name, departmentId, year)
+    VALUES (#{studentNumber}, #{name}, #{departmentId}, #{year})
+  </insert>
+```
+위 insert 태그에서 노란색으로 칠한 부분이 의미하는 것은,  
+새 레코드의 id 필드값을 Student 객체의 id 속성에 대입해 달라는 것이다.   
+</details>      
+
+<br/>    
+
+## 5. 컨트롤러 구현   
+
+<details markdown="1">  
+<summary>view</summary> 
+
+### (1) @Autowired  
+StudentMapper 인터페이스를 구현한 java 클래스를 mybatis spring이 자동으로 구현해주고  
+그 클래스의 객체를 한 개 생성하여, StudentMapper 멤버변수에 자동으로 대입해준다.   
+
+그래서 StudentMapper 멤버변수를 선언했을 뿐이고 어떤 객체를 대입한 것도 아니지만   
+mybatis spring이 자동으로 생성해준 객체가 이 멤버변수에 자동으로 대입되어 있기 때문에    
+액셔 메소드는 이 객체를 사용할 수 있다.   
+
+### (2) @RequestMapping()   
+**클래스에 작성할 때**   
+```
+@Controller   
+@RequestMapping("/student")
+```  
+컨트롤러 클래스의 request mapping 어노테이션이다.   
+요청된 URL이 "/student" 이면 이 컨트롤러를 사용하라. 라는 의미이다.  
+이 부분은 선택적으로 작성하며, 웹 브라우저에서 요청하는 URL(http request)에 mapping된 액션 메소드가 실행되는 것이다.   
+
+Q. 그렇다면 컨트롤러 클래스의 request mapping 어노테이션은 언제 작성해야 할까?  
+A. 액션 메소드의 어노테이션의 URL 앞 부분이 전부 동일할 때 작성하면 됩니다.   
+
+**액션 메소드에 작성할 때**   
+`@RequestMapping("list")`  
+액션 메소드의 어노테이션이다.   
+"student/list" URL이 요청되면 list 액션 메소드가 자동으로 호출된다.   
+request mapping URL = 컨트롤러 URL + 액션 메소드 URL   
+
+**value, method**   
+`@RequestMapping(value="create", method=RequestMethod.GET)`   
+"/student/create" URL이 GET 방식으로 요청되면 이 액션 메소드가 호출된다.  
+
+### (3) return "redirect:...";   
+액션 메소드를 실행한 후, list 상대URL로 redirect 하라는 메타 태그를 웹 브라우저에 출력한다.   
+이 메타 태그를 받은 웹 브라우저는 redirect하라고 지정된 URL을 서버에 즉시 다시 요청하게 된다.  
+뷰는 건너뛰고 즉시 URL을 요청한다.   
+
+### (4) model.addAttribute();  
+```   
+List<Student> students = StudentMapper.findAll();
+model.addAttribute("students", students);
+```      
+"Students" 이름의 데이터를 model 객체에 넣는다.   
+이 데이터를 model attribute 라고 부른다.  
+model attribute 데이터는 뷰(view)에 전달된다.   
+
+### (5) request parameter 전달   
+액션 메소드의 파라미터에 request parameter 값이 채워져서 액션 메소드에 전달된다.   
+
+**값을 하나씩 전달받을 때**  
+``` 
+@RequestMapping(value="edit", method=RequestMethod.GET)
+public String edit(Model model, @RequestParam("id") int id)
+``` 
+위 소스코드에서 @RequestParam("id") int id 부분에서 일어나는 일은 아래와 같다.   
+String s = request.getParameter("id");  
+int id = Integer.parseInt(s);  
+
+**값을 여러개 전달받을 때**  
+``` 
+@RequestMapping(value="edit", method=RequestMethod.POST) 
+public String edit(Model model, Student student)
+```   
+request parameter 데이터가 Student 객체에 자동으로 채워진다.  
+request parameter 데이터의 이름과 액션 메소드의 파라미터 객체의 속성 이름이 일치할 경우에 (setter 이름),  
+request parameter 데이터가 그 속성에 자동으로 채워진다.   
+</details>
