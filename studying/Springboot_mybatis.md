@@ -493,3 +493,89 @@ request parameter 데이터가 Student 객체에 자동으로 채워진다.
 request parameter 데이터의 이름과 액션 메소드의 파라미터 객체의 속성 이름이 일치할 경우에 (setter 이름),  
 request parameter 데이터가 그 속성에 자동으로 채워진다.   
 </details>
+
+<br/>
+
+## 6. 뷰 구현    
+
+<details markdown="1">  
+<summary>view</summary> 
+
+### (1) WEB-INF/views/student 폴더 생성    
+### (2) student/list.jsp    
+`<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>`  
+C: 로 시작하는 JSTL 확장 태그를 사용하기 위한 선언   
+
+`c:url var="R" value="/" />`   
+현재 url에서 context path이 변수 R에 대입된다.    
+프로젝트명이 mybatis이므로, R에 대입되는 값은 "/mybatis/"이다.   
+
+`<script src="${R}res/common.js"></script>`   
+변수 R의 값이 ${R} 부분에 출력된다.   
+예를들어, 변수 R의 값이 "/mybatis/"이면 출력되는 내용은 다음과 같다.   
+`<script src="/mybatis/res/common.js"></script>`  
+
+`<c:forEach var="student" items="${ students }">`  
+model에서 "students" 이름으로 등록된 학생 목록의 학생 객체 각각에 대해서  
+학생 객체를 student 변수에 대입하고 <C:forEach> ... </C:forEach> 태그 사이의 내용을 출력한다.   
+
+### (3) student/edit.jsp  
+`학생 ${ student.id > 0 ? "수정" : "등록" }`  
+model에 들어있는 "Student" 이름의 객체의 id 속성값이 0보다 크면 "수정" 출력 아니면, "등록"을 출력한다.  
+학생등록 화면일 경우 "Student" 이름의 model객체의 id 속성값은 0이고,  
+학생수정 화면일 경우 "Student" 이름의 model객체의 id 속성값은 수정할 Student 레코드의 id이다.   
+
+`<form:form method="post" modelAttribute="student">`   
+이 확장 태그는 form 태그를 출력한다.  
+이 입력 폼에서 편집할 데이터 객체는 model에 들어있는 "Student" 이름의 객체이다. (model Attribute)   
+
+`<form:input path="studentNumber" class="form-control w200" />`  
+input 태그를 출력한다. (type=text)    
+modelAttribute 객체의 studentNumber 속성값이, input 태그의 value 애트리뷰트에 출력된다.  
+input 태그의 name 값은 studentNumber 이다.   
+
+```
+<form:select path="departmentId" class="form-control w200"
+             itemValue="id" itemLabel="departmentName" items="${ departments }" />
+```
+select 태그와 option 태그를 출력한다.  
+(items값) departments 목록의 Department 객체 각각을 option 태그로 출력한다.   
+(itemValue 값) option 태그의 value: Department 객체의 id 속성값이다.  
+(itemLabel 값) option 태그의 텍스트: Department 객체의 departmentName 속성값이다.  
+
+form:form 태그에 선언된 modelAttribute 객체는 Student이다. modelAttribute="student"  
+이 student 객체의 departmentId 속성값과 일치하는 option 태그에 selected를 붙인다.  
+
+select 태그의 name값은 departmentId이다.  
+form이 submit될 때, 선택된 option 태그의 값이 request parameter로 전달된다.   
+이 request parameter의 이름은 departmentId이다.   
+</details>
+
+<br/>
+
+## 7. mybatis 실행과정       
+
+<details markdown="1">  
+<summary>view</summary>
+
+### (1) request parameter 이해   
+**Q.** request parameter 이란?  
+**A.** 웹 브라우저에서 웹 서버에 URL의 실행은 요청할 때(http request)  
+그 요청에 같이 담아 전송하는 데이터를 request parameter라고 부른다.  
+즉, request parameter는 웹 브라우저에서 웹 서버로 전송되는 데이터이다.   
+
+- 웹 브라우저 >> 서버 (전송되는 데이터)  
+- 언제 전송? 웹 브라우저가 서버에 URL을 요청할 때, 그 요청과 함께 전송됨   
+- http request는 언제 방생?
+   + 웹 브라우저 주소칸에 URL을 입력하고 엔터   
+   + a 태그 클릭 ( 요청되는 URL : a 태그의 URL )
+   + submit 버튼 클릭 ( 요청되는 URL : submit 버튼을 포함하는 form 태그의 URL 혹은, action 애트리뷰트가 없으면 현재 URL)   
+   
+**Q.** 현재 URL은?  
+**A.** 웹 브라우저에서 현재 URL은 웹 브라우저창의 주소이다.     
+서버에서 현재 URL은 방금 웹 브라우저가 요청한 URL이다. (http request)      
+ 
+**Q.** 무엇이 request parameter가 되는가?   
+**A.** 자동으로 request parameter로 전송되는 것은 다음과 같다.     
+URL의 query String, 압력폼에 입력된 데이터   
+</details>
