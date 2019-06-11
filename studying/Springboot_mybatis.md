@@ -577,5 +577,130 @@ form이 submit될 때, 선택된 option 태그의 값이 request parameter로 �
  
 **Q.** 무엇이 request parameter가 되는가?   
 **A.** 자동으로 request parameter로 전송되는 것은 다음과 같다.     
-URL의 query String, 압력폼에 입력된 데이터   
+URL의 query String, 압력폼에 입력된 데이터    
+
+### (2) 실행과정    
+이클립스에서 실행하는 경우에는 자동으로 웹 브라우저 창이 열리고 웹 브라우저창의 주소칸에 URL이 자동으로 입력된다.   
+
+1. 웹 브라우저에서 http://localhost:8080/mybatis/student/list URL을 서버에 요청한다. (GET 방식)  
+
+2. 요청된 URL에 연결된(request mapping) 액션 메소드가 실행된다.
+없으면 404에러 발생   
+
+3. StudentController의 list 메소드 실행됨  
+studentMapper.selectAll() 메소드를 호출하여 리턴된 학생 목록을 model 객체에 추가함  
+
+4. 뒤를 이어 실행될 뷰 이름을 리턴함   
+
+5. "student/list" 뷰 이름 앞 뒤에 view prefix, view suffix가 붙는다. (application.properties 참고)  
+/WEB-INF/views/student/list.jsp 파일이 실행된다.   
+
+6. 뷰는 model에 들어있는 학생 목록 데이터를 출력한다. (model 데이터의 이름은 students)   
+출력결과는 html태그, 출력된 html 태그들이 웹 브라우저로 전송되어 웹 브라우저창에 그려진다.  
+
+------------------------------  
+ 
+1. 웹 브라우저창의 학생 목록에서 고정희 학생 클릭   
+클릭된 tr 태그의 onclick 이벤트 핸들러가 호출됨  
+이 이벤트 핸들러는 common.js 파일의 javascript 코드에 의해서 tr 태그에 자동으로 등록되어 있다.  
+
+2. 위 이벤트 핸들러는 다음과 같은 일을 수행한다.   
+`<tr data-url="edit?id=3">`    
+현재 웹 브라우저의 URL http://localhost:8080/mybatis/student/list   
+결과 URL http://localhost:8080/mybatis/student/edit?id=3  
+이 결과 URL이 서버에 요청됨. GET 방식  
+
+3. 요청된 URL에 연결된(request mapping) 액션 메소드가 실행된다. 없으면 404에러   
+
+4. request parameter로 전달된 id값에 해당하는 학생 레코드를 조회해서 model에 추가    
+```
+Student student = studentMapper.findOne(id);
+model.addAttribute("student", student);
+```
+
+학과 목록 전체를 조회해서 model에 추가   
+```
+List<Department> departments = departmentMapper.findAll();
+model.addAttribute("departments", departments);
+```  
+
+5. 뒤를이어 실행된 뷰 이름을 리턴함  
+
+6. "student/list" 뷰 이름 앞 뒤에 view prefix, view suffix가 붙는다.    
+edit.jsp 파일 실행   
+
+7. 뷰는 model에 들어있는 학생 데이터를 form 태그와 input 태그에 출력한다.   
+(model 데이터의 이름은 student)  
+학과 목록 데이터를 select 태그와 option 태그에 출력한다.   
+(model 데이터의 이름은 departments)      
+출력 결과는 html 태그, 출력된 html 태그들이 웹 브라우저로 전송되어 웹 브라우저창에 그린다.   
+
+**소스코드:**  
+`<form:form method="post" modelAttribute="student">`  
+**출력:**  
+`<form id="student" action="/mybatis1/student/edit?id=3" method="post">`  
+
+**소스코드:**  
+`<form:input path="studentNumber" class="form-control w200" />`  
+**출력:**   
+`<input id="studentNumber" name="studentNumber" class="form-control w200" type="text" value="200032003"/>`  
+
+**소스코드:**  
+``` 
+<form:select path="departmentId" class="form-control w200"  
+            itemValue="id" itemLabel="departmentName" items="${ departments }" />  
+``` 
+**출력:**  
+```   
+<select id="departmentId" name="departmentId" class="form-control w200">  
+  <option value="1">국어국문학</option>
+  <option value="2">영어영문학</option>
+  <option value="3" selected="selected">불어불문학</option>
+  <option value="4">소프트웨어공학과</option>
+  <option value="5">컴퓨터공학과</option>
+  <option value="6">정보통신공학과</option>
+  <option value="7">글로컬IT공학과</option>
+</select>
+``` 
+   
+--------------------------------------------------------------------------------------------
+
+1. 웹브라우저 창에서 입력 폼의 데이터를 수정하고, 저장버튼을 클릭.  
+저장 버튼은 submit 버튼.  
+submit 버튼을 포함하고 있는 <form> 태그의 action 애트리뷰트값 URL이 서버에 요청된다.  
+입력폼에 입력된 데이터가 request parameter로 전송된다.  <br/>
+서버에 요청되는 URL: /mybatis1/student/edit?id=3  
+POST 방식 요청  
+
+
+2. 요청된 URL에 연결된(request mapping) 액션 메소드가 실행된다. 없으면 404 에러.  
+```  
+    @RequestMapping("/student")
+    @Controller
+    class StudentController {
+
+    @RequestMapping(value="edit", method=RequestMethod.POST)
+    public String edit(Model model, Student student) {
+        studentMapper.update(student);
+        return "redirect:list";
+    }
+```  
+request parameter 데이터가 액션 메소드 파라미터 객체에 채워져 전달된다. (Student 객체)  
+request parameter 데이터 이름(name)과 Student 객체의 set 메소드 이름이 일치해야 한다.  
+
+
+3. Student 객체에 채워져 전달된 request parameter 데이터가 DB에 저장된다.  
+    studentMapper.update(student);  
+
+
+4. "list" URL로 리다이렉트 하라는 메타 태그가 웹브라우저에 전송된다.  
+    return "redirect:list";  
+
+     "list" 상대 URL  
+     현재 서버에 요청된 URL: http://localhost:8080/mybatis1/student/edit?id=3  
+     결과URL: http://localhost:8080/mybatis1/student/list  
+
+5. 리다이렉트 메타 태그를 받은 웹브라우저는 요청된 URL을 서버에 즉시 요청한다.  
+     http://localhost:8080/mybatis1/student/list  
+
 </details>
