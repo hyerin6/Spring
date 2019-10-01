@@ -37,6 +37,8 @@ public class MybatisController {
         return "redirect:cacheTest";
     }
 
+
+    // departmentList1 액션 메소드는 학과별 학생 목록을 따로 조회해서 Department 객체에 채우고 있다.
     @RequestMapping("departmentList1")
     public String departmentList1(Model model) {
         // 학과 목록을 조회한다.
@@ -53,4 +55,12 @@ public class MybatisController {
         model.addAttribute("departments", departments);
         return "mybatis/departmentList";
     }
+
+    // departmentList2 액션 메소드는 학과별 학생 목록을 한 번에 조회한다.
+    @RequestMapping("departmentList2")
+    public String departmentList2(Model model) {
+        model.addAttribute("departments", departmentMapper.findAllWithStudents());
+        return "mybatis/departmentList";
+    }
+
 }
