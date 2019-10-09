@@ -152,3 +152,78 @@ public class StudentController {
 
 list 액션 메소드를 호출하기 위한 URL은 "studnt/list" 이다.  
 
+
+#### (12) JPA Entity 클래스     
+JPA Entity 클래스는 데이터베이스 테이블의 레코드레 해당하는 Java 클래스이다.       
+데이터베이스 조회 결과가 자동으로 엔티티 클래스 객체에 채워져 리턴된다.      
+
+**@Entity**     
+   JPA Entity 클래스 앞에 @Entity 어노테이션을 붙여야 한다.   
+ 
+**@Id**    
+   기본키(primary key)에 해당하는 멤버 변수에 @Id 어노테이션을 붙여야 한다.   
+
+**@GeneratedValue(strategy = GenerationType.IDENTITY)**    
+   기본키가 Auto Increment 필드이거나 Identity 필드인 경우에    
+   이 어노테이션을 붙여야 한다.    
+   Identity 필드란, key 생성을 데이터베이스에 위임한다는 것이다.    
+   (ex. MySQL의 Auto Increment)  
+
+**@ManyToOne**     
+**@JoinColumn(name = "departmentId")**  
+**Department department;**  
+   Employee 테이블의 departmentId 필드가 외래키(foreign key)이고,  
+   이 외래키가 Department 테이블의 레코드를 한 개 가르킨다면,  
+   Employee 테이블에 int departmentId 멤버 변수를 만드는 대신에  
+   Department department 멤버 변수를 만들고, 위 어노테이션들을 붙어야 한다.  
+   Employee 테이블과 Department 테이블의 관계가   
+   다 대 1 이면, @ManyToOne 어노테이션을 붙이고,  
+   1 대 1 이면 @OneToOne 어노테이션을 붙인다.  
+
+
+#### (13) Eager Loading, Lazy Loading        
+위와 같이 departmentId 외래키 대신 Department department 멤버 변수를     
+Employee 엔터티 클래스에 정의하면 다음과 같은 일이 자동으로 일어난다.    
+
+(1) DB 에서 Employee 레코드가 조회되면,   
+(2) Employee 엔터티 클래스 객체가 생성되고,   
+(3) 이 객체에, 조회된 Employee 레코드가 채워지고,  
+(4) 그 Employee 의 departmentId 외래키가 가르키는 Department 레코드도 같이 조회되고,   
+(5) Department 엔터티 클래스 객체가 생성되고,  
+(6) 이 객체에, 조회된 Department 레코드가 채워지고  
+(7) 이 Department 객체가 Employee 객체의 department 멤버 변수에 대입된다.  
+
+**Eager Loading**  
+DB 에서 Employee 레코드를 조회할 때,  
+(1) ~ (7) 절차가 자동으로 실행되는 정책을 Eager Loading 이라고 부른다.  
+보통 Eager Loading 이 기본 정책이다.  
+
+**Lazy Loading**  
+DB 에서 Employee 레코드를 조회할 때,  
+(1) ~ (3) 절차만 즉시 자동으로 실행되고 (4) ~ (7) 절차의 실행은 최대한 뒤로 미루는 것을  
+Lazy Loading 정책이라고 부른다.  
+(사용할 때 잠깐 멈추고 데이터를 가져오기 때문에  Eager Loading 보다 조금 느리다. )  
+
+Employee 클래스의 getDepartment() 메소드가 호출되기 전에는 (4) ~ (7) 절차의 실행을 미루다가  
+최초로 getDepartment() 메소드가 호출될 때 이 절차를 실행한다.  
+
+### 2. jpa10 프로젝트    
+#### (1) employee1 데이터베이스 import   
+#### (2) 프로젝트 생성    
+maven - WEB, JPA, MySQL    
+#### (3) application.properties   
+
+```
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```  
+엔터티 클래스의 studentNumber 속성에 자동으로 연결될 데이터베이스 필드 명이    
+studentNumber 형태이면 이 설정이 필요하다.  (camel case)    
+student_number 형태이면 이 설정이 필요없다. (snake case)     
+
+```
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+```  
+JPA 엔진에 의해서 자동 생성되고 실행되는 SQL 명령을 실시간으로 보여준다.   
+
+
