@@ -1,4 +1,4 @@
-# jpa 기초   
+# jpa 기초      
 ### 1. 배경지식   
 #### (1) Domain Model   
 데이터베이스를 설계할 때, Entity Relationship 다이어그램으로 데이터베이스의 저장 정보를 설계한다.   
