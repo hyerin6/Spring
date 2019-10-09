@@ -1,11 +1,6 @@
 package net.skhu.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class Employee {
@@ -14,9 +9,12 @@ public class Employee {
     int id;
     String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // 거의 항상 가져오니까 EAGER
     @JoinColumn(name = "departmentId")
     Department department;
+
+    @OneToOne(mappedBy="employee", fetch = FetchType.EAGER) // 주소는 가끔 가져오니까 LAZY로 적어주자.
+            Address address;
 
     public int getId() {
         return id;
@@ -40,5 +38,13 @@ public class Employee {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }
