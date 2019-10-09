@@ -174,6 +174,143 @@ equals, hashCode, toString 메소드를 구현할 때 제외해야 한다.
 ## 4. 엔티티 클래스 구현    
 ### (1) Department.java    
 
+```@Data```         
+클래스에서 @Data 어노테이션을 주면 lombok에 의해 getter, setter이 자동으로 생성된다.        
+
+```java
+@Collumn(name="departmentName")
+String name;
+```
+department 테이블에서 부서명 필드가 departmentName이다.   
+필드명과 멤버변수명이 다르기 때문에 @Column 어노테이션이 필요하다.     
+필드명과 멤버변수명이 같으면 필요없다.    
+
+```java
+@ToString(exclude={"students","courses","professors"})
+@EqualsAndHashCode(exclude={"students","courses","professors"})
+```
+Department 클래스의 toString, equals, hashCode 메소드를 구현할 때,       
+department 테이블의 필드에 해당하는 id, name 멤버 변수는 학과 객체의 내용에 해당한다.         
+  
+students, courses, professors 멤버 변수는 다른 테이블과의 관계를 구현한 것이고,          
+department 테이블의 필드와 일치하지 않는다.        
+toString, equals, hashCode 메소드를 구현할 때, 이 멤버 변수들은 제외되어야 한다.               
+
+이 어노테이션이 없을 때 실행 시 에러가 발생하지는 않는다.      
+하지만 System.out.print()로 출력하거나 JSON으로 출력할 때 에러가 발생한다.    
+
+
+### (2) Student.java     
+### (3) Professor.java    
+### (4) Course.java        
+### (5) Registration.java   
+
+```java
+@Table(name = "register")
+public class Registration {
+```
+DB 에서 수강신청 테이블 이름은 register 이다.        
+수강신청 엔터티 클래스 이름은 Registeration 이다.         
+테이블 이름과 엔터티 클래스 이름이 일치하지 않기 때문에 @Table 어노테이션이 필요하다.        
+
+```java
+Integer grade;
+```
+DB의 greade 필드는 nullable 필드이다. 즉 null 값이 가능하다.       
+int 타입은 null 값이 가능하지 않기 때문에, grade 변수를 Integer 클래스 타입으로 선언해야 한다.         
+
+
+## 5. 컨트롤러 클래스 구현    
+**src/main/java/net/skhu/controller/APIController.java**  
+
+```java
+@RequestMapping("department/{id}/students")
+public List<Student> departmentStudents(@PathVariable("id") int id) {
+    Department department = departmentRepository.findById(id).get();
+    return department.getStudents();
+}
+```
+이 액션 메소드를 호출하기 위한 URL은         
+http://localhost:8080/api/department/2/students 형태이다.         
+id 값이 2 인 학과(department) 소속 학생 목록을 출력한다.         
+
+findById 메소드는 Optional<Department> 객체를 리턴한다.          
+이 Optional 객체의 get() 메소드는 Department 객체를 리턴한다.         
+
+리턴된 Department 객체의 getStudents 메소드를 호출하면           
+그 학과 소속 학생 목록이 리턴된다.        
+
+Department 클래스의 getStudents 메소드는 lombok 에 의해서 자동 생성된 메소드이다.          
+
+
+```java
+@RequestMapping("student/{id}/courses")
+public List<Course> studentCourses(@PathVariable("id") int id) {
+    Student student = studentRepository.findById(id).get();
+    List<Course> list = new ArrayList<Course>();
+    for (Registration r : student.getRegistrations())
+        list.add(r.getCourse());
+    return list;
+}
+```
+이 액션 메소드를 호출하기 위한 URL은         
+http://localhost:8080/api/student/3/courses 형태이다.         
+id 값이 3 인 학생(student)의 수강 강좌(course) 목록을 출력한다.          
+
+studentRepository = findOne(id) 메소드는 id로 학생을 조회하여 Student 객체를 리턴한다.         
+student.getRegistrations() 메소드는 그 학생의 수강(Registration) 객체 목록을 리턴한다.       
+registration.getCourse() 메소드는 수강 대상 강좌(Course) 객체를 리턴한다.      
+
+
+## 6. stream API 활용  
+Java8에서 추가된 lambda expression 문법과 stream API를 이용하여 studentCourses 메소드를 구현하자.  
+
+```java
+@RequestMapping("student/{id}/courses")
+public Stream<Course> studentCourses(@PathVariable("id") int id) {
+    System.out.println(3);
+    return studentRepository
+            .findById(id).get()
+            .getRegistrations()
+            .stream()
+            .map(s -> s.getCourse());
+}
+```
+
+**studentRepository.findById(id)**    
+Optional<Student> 객체가 리턴된다.      
+
+**.get()**  
+Optional<Student> 객체 내부에 들어있는 Student 객체가 리턴된다.        
+.get을 하는 이유 - optional안에있는 student 객체를 꺼내야하기 때문이다.           
+
+**.getRegistrations()**    
+Student 클래스의 메소드이다. 학생의 수강신청 목록이 리턴된다. List<Registration>    
+
+**.stream()**    
+List< Registration > 객체로부터, Registration 객체 스트림(stream)을 생성하여 리턴한다.        
+리턴되는 객체는 Stream<Registration> 이다.    
+Stream API 메소드를 사용하려면, 객체 목록으로부터 객체 스트림(stream)을 생성해야 한다.    
+스트림은 객체가 하나 하나씩 흘려보내진다는 것이다.       
+즉, 수강 목록을 하나씩 전달한다.     
+
+**.map(r -> r.getCourse())**       
+Registration 객체 스트림의 Registration 객체 각각에 대해서       
+람다식 r -> r.getCourse() 을 실행한다.     
+(하나씩 전달받은 Registration 객체에서 Course만 모아서 리턴)               
+이 람다식이 리턴하는 Course 객체를 모아서 Stream<Course> 스트림을 리턴한다.        
+ 
+**웹 브라우저에서 출력되는 것은 course 목록이다.**  
+
+
+
+
+
+
+
+
+
+
 
 
 
