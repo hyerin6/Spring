@@ -21,20 +21,13 @@
         JOIN Student s ON r.studentId = s.id
     </select>
 
-    <resultMap id="resultMap_Course1" type="Course">
+    <resultMap id="resultMap_Course1" type="Course" autoMapping="true">
         <id property="id" column="id" />
-        <result property="courseName" column="courseName" />
-        <result property="unit" column="unit" />
-        <result property="startDate" column="startDate" />
-        <result property="professorId" column="professorId" />
-        <result property="departmentId" column="departmentId" />
-        <association property="department" javaType="Department">
+        <association property="department" javaType="Department" autoMapping="true">
             <id property="id" column="departmentId" />
-            <result property="departmentName" column="departmentName" />
         </association>
-        <association property="professor" javaType="Professor">
+        <association property="professor" javaType="Professor" autoMapping="true">
             <id property="id" column="professorId" />
-            <result property="professorName" column="professorName" />
         </association>
     </resultMap>
 
