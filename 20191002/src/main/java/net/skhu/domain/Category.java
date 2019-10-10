@@ -1,12 +1,28 @@
 package net.skhu.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.List;
 
 
 @Data
+@ToString(exclude={"books"})
+@EqualsAndHashCode(exclude={"books"})
 @Entity
 public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
+
+    String categoryName;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "category")
+    List<Book> books;
 
 }

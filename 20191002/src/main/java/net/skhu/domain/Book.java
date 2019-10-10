@@ -1,7 +1,6 @@
 package net.skhu.domain;
 
 import lombok.Data;
-
 import javax.persistence.*;
 
 @Data
@@ -13,9 +12,10 @@ public class Book {
     int id;
 
     String title;
+
     String author;
+
     int price;
-    boolean available;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
@@ -24,5 +24,7 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "publisherId")
     Publisher publisher;
+
+    int available;
 
 }

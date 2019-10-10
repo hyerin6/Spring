@@ -9,7 +9,6 @@ import javax.persistence.Id;
 @Data
 @Entity
 public class Publisher {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
