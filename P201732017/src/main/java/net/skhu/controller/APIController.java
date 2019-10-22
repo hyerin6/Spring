@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value="/api")
@@ -47,13 +48,23 @@ public class APIController {
         return productRepository.findById(id).get().getSupplies();
     }
 
-    @RequestMapping(value = "product/{id}/dealers", method = RequestMethod.GET)
-    public List<Dealer> productJoinSupplyJoinDealer(@PathVariable("id") int id){
+
+    @RequestMapping(value = "product/{id}/dealers/v1", method = RequestMethod.GET)
+    public List<Dealer> productJoinSupplyJoinDealer1(@PathVariable("id") int id){
         List<Dealer> dealers = new ArrayList<>();
         List<Supply> supplies = productRepository.findById(id).get().getSupplies();
         for(Supply s : supplies)
             dealers.add(s.getDealer());
         return dealers;
+    }
+
+
+    @RequestMapping(value = "product/{id}/dealers/v2", method = RequestMethod.GET)
+    public Stream<Dealer> productJoinSupplyJoinDealer2(@PathVariable("id") int id){
+        return productRepository.findById(id).get()
+                .getSupplies()
+                .stream()
+                .map(s -> s.getDealer());
     }
 
 }
