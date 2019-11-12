@@ -116,3 +116,88 @@ student 테이블과 department 테이블들을 조회하고 department 테이�
 ASC - 오름차순 ex) 1, 2, 3, 4, ... 생략 가능       
 DESC - 내림차순 ex) 5, 4, 3, 2, ...       
 
+(6) 쿼리 메소드 이름 규칙    
+
+| keyword | Sample | 설명 |      
+|:---:|:---:|:---:|
+| And | findByLastNameAndFirstName(String lastName, String firstName) | |
+| Or | findByLastNameOrFirstName(String lastName, String firstName) | |
+| Between | findByStartDateBetween(Date date1, Date date2) | |
+| LessThan | findByAgeLessThan(int age) | - 보다 작은 레코드 조회 |
+| GreaterThan | findByAgeGreaterThan(int age) | - 와 같거나 큰 레코드 조회 |
+| After | findByStartDateAfter(Date date1) | WHERE x.startDate > #{startDate} |
+| Before | findByStartDateBefore(Date date1) | WHERE x.startDate < #{startDate} |
+| IsNull | findByAgeIsNull() | |
+| IsNotNull, NotNull | findByAgeNotNull(), findByAgeIsNotNull() | |
+| Like | findByFirstNameLike(String pattern) | |
+| NotLike | findByFirstNameNotLike(String pattern) | |
+| StartingWith | findByFirstNameStartingWith(String name) | |
+| EndingWith | findByFirstNameEndingWith(String name) | |
+| Containing | findByFirstNameContaining(String name) | |
+| OrderBy | findByAgeOrderByLastNameDesc(int age) | WHERE 조건컬럼명 Like + '%' + #{파라미터} + '%', WHERE name LIKE '%김%' |
+| Not | findByLastNameNot(String name) | |
+| In | findByAgeIn(Collection<Integer> ages) | WHERE age IN #{ages} |
+| NotIn | findByAgeNotIn(Collection<Integer> age) | |
+| True | findByActiveTrue() | WHERE active, WHERE active = true |
+| False | findByActiveFalse() | WHERE NOT active, WHERE active = false |
+| Top | findTop10ByOrderByAge() | 조회 결과에서 선두 10개 레코드만 리턴한다. |
+  
+
+💁🏻‍♀️ 주의 !             
+mybatis는 Collection 타입 파라미터를 지원하지 않는다.       
+
+**에러 메시지**         
+만약 메소드 이름이 규칙에 어긋난다면,        
+STS 편집창에서 에러 메시지가 표시될 것이다.        
+
+예를 들어, Student 엔터티의 name 속성명을 namme 으로 수정하자.        
+아래와 같은 에러 메시지가 표시된다.        
+
+"Invalid derived query! No property namme found for type Student! Did you mean 'name'?"        
+
+</br>   
+
+### 파라미터 변수 이름은 중요하지 않다. 파라미터 변수 순서가 중요하다.        
+ex) findByLastNameAndFirstName(String s1, String s2)    
+파라미터 변수명이 무엇이든 상관없이       
+첫번째 파라미터가 lastName이고, 두번째 파라미터가 firstNmae이어야 한다.        
+
+</br>   
+
+### 파라미터 변수명이 무시되는 이유      
+Java 언어는 바이트코드로 컴파일 된다. (*.class 파일)
+
+컴파일된 바이트코드가 JVM에서 실행된다.   
+
+컴파일된 *.class 파일에 Java 지역변수명과 파라미터 변수명은 들어있지 않다.   
+그래서 JVM에서 바이트코드가 실행될 때 메소드 파라미터 변수명은 무시될 수 밖에 없다.     
+
+</br>   
+
+
+### 파라미터 변수명이 무시되는 사례   
+mybatis mapper 메소드   
+JPA Repository 메소드   
+Spting MVC 액션 메소드     
+
+
+(7) countBy, deleteBy, removeBy      
+findBy 메소드 이름 규칙은   
+countBy, deleteBy, removeBy 메소드에도 적용된다.     
+
+countBy는 주어진 조건에 일치하는 레코드 수를 리턴한다.    
+deleteBy, removeBy는 조건에 일치하는 레코드를 삭제한다.    
+
+
+**예**   
+```java
+public interface StudentRepository extends JpaRepository<Student, Integer>  {
+    int countByName(String name);
+    int countByNameStartsWith(String name);
+    int countByStudentNoOrName(String studentNo, String name);
+
+    void deleteByName(String name);
+    void deleteByDepartmentId(int departmentId);
+}
+```
+
