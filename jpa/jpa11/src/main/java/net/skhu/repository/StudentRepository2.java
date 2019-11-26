@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import net.skhu.domain.Course;
 import net.skhu.domain.Department;
 import net.skhu.domain.Student;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface StudentRepository2 extends JpaRepository<Student, Integer>  {
     @Query("SELECT s FROM Student s ORDER BY name")
     List<Student> findStudents();
@@ -43,3 +45,4 @@ public interface StudentRepository2 extends JpaRepository<Student, Integer>  {
     @Query("UPDATE Student s SET name = :name WHERE id = :id")
     void updateStudentName(@Param("id") int id, @Param("name") String name);
 }
+

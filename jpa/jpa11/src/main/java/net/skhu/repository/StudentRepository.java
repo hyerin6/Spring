@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import net.skhu.domain.Student;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface StudentRepository extends JpaRepository<Student, Integer>  {
 
     List<Student> findByName(String name);
@@ -17,3 +19,4 @@ public interface StudentRepository extends JpaRepository<Student, Integer>  {
     List<Student> findAllByOrderByNameDesc();
     List<Student> findByDepartmentIdOrderByNameDesc(int id);
 }
+

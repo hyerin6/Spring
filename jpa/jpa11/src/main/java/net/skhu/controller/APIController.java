@@ -2,7 +2,6 @@ package net.skhu.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,23 +54,19 @@ public class APIController {
     }
 
     @RequestMapping("student/{id}/courses")
-    public Stream<Course> studentCourses(@PathVariable("id") int id) {
-        System.out.println(3);
-        return studentRepository
-                .findById(id).get()
-                .getRegistrations()
-                .stream()
-                .map(s -> s.getCourse());
-    }
-
-    /*
-    @RequestMapping("student/{id}/courses")
     public List<Course> studentCourses(@PathVariable("id") int id) {
         Student student = studentRepository.findById(id).get();
         List<Course> list = new ArrayList<Course>();
         for (Registration r : student.getRegistrations())
             list.add(r.getCourse());
         return list;
+
+        /*
+         return studentRepository
+            .findById(id).get()
+            .getRegistrations()
+            .stream()
+            .map(s -> s.getCourse());
+         */
     }
-     */
 }

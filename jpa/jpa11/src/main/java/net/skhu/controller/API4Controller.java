@@ -64,6 +64,7 @@ public class API4Controller {
         return studentRepository2.findStudentCountOfDepartment();
     }
 
+
     @Transactional
     @RequestMapping("testUpdate1")
     public Student testUpdate1() {
@@ -86,3 +87,4 @@ public class API4Controller {
         return studentRepository2.findById(2).get();
     }
 }
+

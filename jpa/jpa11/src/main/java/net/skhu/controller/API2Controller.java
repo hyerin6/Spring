@@ -50,3 +50,4 @@ public class API2Controller {
         return studentRepository.findByDepartmentIdOrderByNameDesc(1);
     }
 }
+

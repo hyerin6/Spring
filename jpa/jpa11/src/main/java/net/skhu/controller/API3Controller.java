@@ -19,6 +19,7 @@ public class API3Controller {
     @Autowired StudentRepository studentRepository;
     @Autowired JpaContext jpaContext;
 
+    // http://localhost:8080/index.jsp
     @RequestMapping("jpql")
     public Object jpql(@RequestParam("s") String s) {
         EntityManager manager = jpaContext.getEntityManagerByManagedType(Student.class);

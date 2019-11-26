@@ -45,3 +45,4 @@ public class Course {
     @OneToMany(mappedBy="course", fetch = FetchType.LAZY)
     List<Registration> registrations;
 }
+

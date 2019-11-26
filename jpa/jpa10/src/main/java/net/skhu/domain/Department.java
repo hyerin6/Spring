@@ -3,7 +3,6 @@ package net.skhu.domain;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +18,7 @@ public class Department {
     String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy="department", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="department")
     List<Employee> employees;
 
     public int getId() {
