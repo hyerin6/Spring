@@ -10,6 +10,6 @@ public class Pagination {
     int recordCount;
 
     public String getQueryString() {
-        return String.format("pg=%d&sz=%d&di", pg, sz, di);
+        return String.format("pg=%d&sz=%d&di=%d", pg, sz, di);
     }
 }
