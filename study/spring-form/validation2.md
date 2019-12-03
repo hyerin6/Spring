@@ -51,6 +51,7 @@ validation annotation에 의해서 자동으로 검사되기 힘든 에러들도
 이런 에러 검사는 validation annotation으로 구현하기 힘들고 따로 직접 구현해야 한다.      
 
 - 로직 에러 처리하기 절차      
+
 (1) spring form validation 에러가 있다면, 회원가입 뷰 이름을 리턴한다.    
 회원가입 뷰 이름이 리턴되면 웹 브라우저 창에 회원가입 화면이 다시 출력된다.   
 
@@ -68,6 +69,7 @@ validation annotation에 의해서 자동으로 검사되기 힘든 에러들도
 
 
 - bindingResult 객체에 에러 메시지 등록하기   
+
 ```bindingResult.rejectValue("password2", null, "비밀번호가 일치하지 않습니다.");```  
 rejectValue 메소드를 호출하여 에러 메시지를 등록한다.      
 
