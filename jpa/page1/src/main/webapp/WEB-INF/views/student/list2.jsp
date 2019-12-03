@@ -16,6 +16,7 @@
   <h1>학생 목록</h1>
   <form:form method="get" modelAttribute="pagination" class="form-inline">
     <form:hidden path="pg" value="1" />
+    <form:hidden path="sz"/>
     <span>학과:</span>
     <form:select path="di" class="form-control">
       <form:option value="0">전체</form:option>

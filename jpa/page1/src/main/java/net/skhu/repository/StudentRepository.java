@@ -17,6 +17,7 @@ public interface StudentRepository  extends JpaRepository<Student, Integer> {
     public Page<Student> findAll(Pageable pageable);
     public Page<Student> findByDepartmentId(int departmentId, Pageable pageable);
 
+    // 아래 두 메소드는 Service 클래스에 구현하는 것이 더 바람직할 수 있음.
     public default List<Student> findAll(Pagination pagination) {
         Pageable pageable = PageRequest.of(pagination.getPg() - 1, pagination.getSz(),
                 Sort.Direction.ASC, "studentNo");
