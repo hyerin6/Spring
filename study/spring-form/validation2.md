@@ -31,7 +31,7 @@ org.hibernate.validator.constraints.NotEmpty.message 는 @NotEmpty 어노테이�
 이 어노테이션에 message 애트리뷰트 값으로 에러 메시지를 등록하면 된다.      
 
 Example
-```
+```java
 @NotEmpty(message="학번을 입력하세요")
 @Size(min=6, max=12, message="6 자리 이상 12 자리 이하이어야 합니다.")
 @Min(value=1, message="양의 정수를 입력하세요")
@@ -81,7 +81,7 @@ bindingResult에 위 에러가 등록되면, 아래 태그에 그 에러 메시�
 
 
 #### (2) UserService.java        
-```
+```java
 public boolean hasErrors(UserRegistrationModel userModel, BindingResult bindingResult){
 	if(bindingResult.hasErrors()){
 		return true;
@@ -93,7 +93,7 @@ public boolean hasErrors(UserRegistrationModel userModel, BindingResult bindingR
 ```
 
 #### (3) UserController.java           
-```
+```java
 public String register(...){
 	if(userService.hasErrors(userModel, bindingResult)){
 		return "user/register";
