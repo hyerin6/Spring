@@ -13,7 +13,7 @@ spring web mvc로 구현한 입력폼의 submit 과정은 다음과 같다.
 입력폼에 입력된 데이터도 이 요청에 같이 담겨 전송된다. (request parameter)            
 
 ⓷ spring web mvc 엔진이 그 요청을 받아서 요청된 url과 일치하는 액션메소드를 찾는다.               
-```
+```java
 @RequestMapping(value="studentEdit", method=RequestMethod.POST)
 public String studentEdit(@valid Student student, Model model,
 						BingingResult bindingResult){ ... }
@@ -24,7 +24,7 @@ spring form validation 기능을 구현하기 위해,
 검사결과를 bindingResult에 채워진 후에 액션 메소드가 호출된다.      
 
 ⓸ 위 액션메소드의 파라미터가 객체이기 때문에 spring web mvc 엔진이 아래의 일들을 자동으로 처리한다.         
-```
+```java
 Student student = new Student(); // Student 객체 생성
 student.setStudentNumber("201732017"); // 생성된 객체에 request parameter 데이터를 채운다.  
 model.addAttribute("student", student); // 객체를 model 객체에 등록한다.   
@@ -32,7 +32,7 @@ model.addAttribute("student", student); // 객체를 model 객체에 등록한�
 
 ⓹ Student 객체에 채워진 데이터에 문제가 없는지 검사한다.      
 데이터를 검사할 규칙이 Student 클래스에 등록되어 있어야 한다.      
-```
+```java
 public class Student{
 	@NotEmpty 
 	@Size(min=9, max=12)
@@ -107,7 +107,7 @@ user/register.jsp 뷰 파일을 실행할 때, 학과 목록이 출력되어야 
 submit 버튼을 눌렀을 때, POST 방식의 register 액션 메소드가 실행된다.       
 
 
-```
+```java
 if(bindingResult.hasErrors()){
 	model.addAttribute("departments", departmentService.findAll());
 	return "user/register";
@@ -117,7 +117,7 @@ userModel 모델 객체에 채워진 데이터에 오류가 있다면, if문이 
 그래서 "user/register" 뷰 이름을 리턴한다.            
 
 
-```
+```java
 userService.save(userModel);
 return "redirect:registerSuccess";
 ```
