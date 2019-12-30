@@ -19,10 +19,6 @@
   <hr />
   <form:form method="post" modelAttribute="book">
     <div class="form-group">
-      <label>학번:</label>
-      <form:input path="studentNumber" class="form-control w200" />
-    </div>
-    <div class="form-group">
       <label>제목:</label>
       <form:input path="title" class="form-control w200" />
     </div>
@@ -30,31 +26,36 @@
           <label>저자:</label>
           <form:input path="author" class="form-control w200" />
     </div>
+
     <div class="form-group">
       <label>카테고리</label>
       <form:select path="categoryId" class="form-control w200"
-                   itemValue="id" itemLabel="categoryName" items="${ categories }" />
+      itemValue="id" itemLabel="categoryName" items="${ categories }" />
     </div>
+
     <div class="form-group">
-      <label>가격</label>
+      <label>가격:</label>
       <form:input path="price" class="form-control w200" />
     </div>
+
     <div class="form-group">
           <label>출판사</label>
           <form:select path="publisherId" class="form-control w200"
-                       itemValue="id" itemLabel="title" items="${ publishers }" />
+          itemValue="id" itemLabel="title" items="${ publishers }" />
      </div>
+
     <hr />
-    <div>
-      <button type="submit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-ok"></span> 저장</button>
-      <c:if test="${ book.id > 0 }">
-        <a href="delete?id=${ book.id }" class="btn btn-danger" data-confirm-delete>
-          <i class="glyphicon glyphicon-remove"></i> 삭제</a>
-      </c:if>
-      <a href="list" class="btn btn-info">목록으로</a>
-    </div>
-  </form:form>
-</div>
-</body>
+        <div>
+          <button type="submit" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-ok"></span> 저장</button>
+                <c:if test="${ book.id > 0 }">
+                  <a href="delete?id=${ book.id }" class="btn btn-danger" data-confirm-delete>
+                    <i class="glyphicon glyphicon-remove"></i> 삭제</a>
+                </c:if>
+                <a href="list" class="btn btn-info">목록으로</a>
+              </div>
+            </form:form>
+     </div>
+   </body>
 </html>
+

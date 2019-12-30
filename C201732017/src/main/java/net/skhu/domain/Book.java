@@ -18,6 +18,12 @@ public class Book {
 
     int price;
 
+    @Column(insertable = false, updatable = false)
+    int categoryId;
+
+    @Column(insertable = false, updatable = false)
+    int publisherId;
+
     @ManyToOne
     @JoinColumn(name = "categoryId")
     Category category;

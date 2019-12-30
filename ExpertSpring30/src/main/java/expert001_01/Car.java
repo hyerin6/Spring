@@ -3,11 +3,9 @@ package expert001_01;
 public class Car {
 
 	Tire tire;
-	
-	public Car(Tire tire) {
-		this.tire = tire;
-	}
 
+	// 직접 의존성을 해결하는 경우 - Car 객체가 Tire를 직접 생산하는 
+	// 즉, Tire에 대한 의존성을 자체적으로 해결하는 방식 
 	public Car() {
 		tire = new KoreaTire();
 	}
