@@ -63,7 +63,7 @@ public class APIController {
     }
 
     @RequestMapping(value="edit", method=RequestMethod.GET)
-    public String edit(Model model, @RequestParam("id") int id) {
+    public String edit(Model model, @RequestParam("id") int id, Pagination pagination) {
         Optional<Book> book = bookRepository.findById(id);
         model.addAttribute("book", book.get());
         List<Publisher> publishers = publisherRepository.findAll();
@@ -74,7 +74,7 @@ public class APIController {
     }
 
     @RequestMapping(value="edit", method=RequestMethod.POST)
-    public String edit(Model model, Book book) {
+    public String edit(Model model, Book book, Pagination pagination) {
         Category category = categoryRepository.findById(book.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid categoryId"));
         Publisher publisher = publisherRepository.findById(book.getPublisherId())
@@ -82,13 +82,13 @@ public class APIController {
         book.setCategory(category);
         book.setPublisher(publisher);
         bookRepository.save(book);
-        return "redirect:list";
+        return "redirect:list?" + pagination.getQueryString();
     }
 
     @RequestMapping("delete")
-    public String delete(Model model, @RequestParam("id") int id) {
+    public String delete(Model model, @RequestParam("id") int id, Pagination pagination) {
         bookRepository.deleteById(id);
-        return "redirect:list";
+        return "redirect:list?" + pagination.getQueryString();
     }
 
 }

@@ -33,7 +33,7 @@
     </thead>
     <tbody>
       <c:forEach var="book" items="${ list }">
-        <tr data-url="edit?id=${ book.id }">
+        <tr data-url="edit?id=${ book.id }&${ pagination.queryString }">
           <td>${ book.id }</td>
           <td>${ book.title }</td>
           <td>${ book.author }</td>

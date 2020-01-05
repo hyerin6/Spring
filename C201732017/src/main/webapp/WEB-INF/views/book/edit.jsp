@@ -49,10 +49,10 @@
           <button type="submit" class="btn btn-primary">
                   <span class="glyphicon glyphicon-ok"></span> 저장</button>
                 <c:if test="${ book.id > 0 }">
-                  <a href="delete?id=${ book.id }" class="btn btn-danger" data-confirm-delete>
+                    <a href="delete?id=${ book.id }&${ pagination.queryString }" class="btn btn-danger" data-confirm-delete>
                     <i class="glyphicon glyphicon-remove"></i> 삭제</a>
                 </c:if>
-                <a href="list" class="btn btn-info">목록으로</a>
+                <a href="list?${ pagination.queryString }" class="btn btn-info">목록으로</a>
               </div>
             </form:form>
      </div>

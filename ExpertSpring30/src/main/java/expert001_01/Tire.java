@@ -1,7 +1,5 @@
 package expert001_01;
 
-public interface Tire {
-	
+interface Tire {
 	String getBrand();
-
 }

@@ -1,9 +1,7 @@
 package expert001_01;
 
-public class AmericaTire implements Tire{
-	
+public class AmericaTire implements Tire {
 	public String getBrand() {
-		return "america tire";
+		return "미국 타이어";
 	}
-
 }
