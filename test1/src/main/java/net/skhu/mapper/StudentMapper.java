@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import net.skhu.dto.Student;
 
+
 @Mapper
 public interface StudentMapper {
     Student findById(int id);

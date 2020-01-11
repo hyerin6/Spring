@@ -10,4 +10,3 @@ public class Student {
     int departmentId;
     int year;
 }
-

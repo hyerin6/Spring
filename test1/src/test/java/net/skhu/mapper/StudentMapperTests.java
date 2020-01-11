@@ -17,7 +17,8 @@ import net.skhu.dto.Student;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class StudentMapperTest {
+public class StudentMapperTests {
+
     @Autowired
     StudentMapper studentMapper;
 

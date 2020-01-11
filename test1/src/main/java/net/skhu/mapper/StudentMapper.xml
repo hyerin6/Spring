@@ -4,34 +4,34 @@
 
 <mapper namespace="net.skhu.mapper.StudentMapper">
     <select id="findById" resultType="Student">
-        SELECT * FROM Student WHERE id = #{id}
-    </select>
+    SELECT * FROM Student WHERE id = #{id}
+  </select>
 
     <select id="findByStudentNumber" resultType="Student">
-        SELECT * FROM Student WHERE studentNumber = #{studentNumber}
-    </select>
+    SELECT * FROM Student WHERE studentNumber = #{studentNumber}
+  </select>
 
     <select id="findAll" resultType="Student">
-        SELECT s.*, d.departmentName, NOW() time
-        FROM Student s LEFT JOIN department d ON s.departmentId = d.id
-    </select>
+    SELECT s.*, d.departmentName, NOW() time
+    FROM Student s LEFT JOIN department d ON s.departmentId = d.id
+  </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT Student (studentNumber, name, departmentId, year)
-        VALUES (#{studentNumber}, #{name}, #{departmentId}, #{year})
-    </insert>
+    INSERT Student (studentNumber, name, departmentId, year)
+    VALUES (#{studentNumber}, #{name}, #{departmentId}, #{year})
+  </insert>
 
     <update id="update">
-        UPDATE Student SET
-        studentNumber = #{studentNumber},
-        name = #{name},
-        departmentId = #{departmentId},
-        year = #{year}
-        WHERE id = #{id}
-    </update>
+    UPDATE Student SET
+      studentNumber = #{studentNumber},
+      name = #{name},
+      departmentId = #{departmentId},
+      year = #{year}
+    WHERE id = #{id}
+  </update>
 
-    <delete id="delete">
-        DELETE FROM student WHERE id = #{id};
-    </delete>
+    <delete id="deleteById">
+    DELETE FROM student WHERE id = #{id};
+  </delete>
 
 </mapper>
