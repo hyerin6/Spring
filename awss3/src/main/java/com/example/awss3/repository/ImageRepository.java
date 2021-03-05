@@ -7,7 +7,4 @@ import com.example.awss3.domain.Image;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
-
-	Image save(Image image);
-
 }

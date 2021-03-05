@@ -18,10 +18,14 @@ public class ServiceExceptionAspect {
 	private final S3Uploader s3Uploader;
 
 	@AfterThrowing("@annotation(com.example.awss3.aop.ImageSaveExHandler)")
-	public void imageServiceExceptionHandler(JoinPoint joinPoint) {
-		Object[] parameterValues = joinPoint.getArgs();
-		Image image = (Image)parameterValues[0];
+	public void imageUploadExceptionHandler(JoinPoint joinPoint) {
+		Image image = (Image)joinPoint.getArgs()[0];
 		s3Uploader.deleteS3Object(image);
+	}
+
+	@AfterThrowing("execution(* addImages*(*))")
+	public void imagesUploadExceptionHandler(JoinPoint joinPoint) {
+
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.example.awss3.service;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -22,6 +24,12 @@ public class ImageService {
 	@Transactional
 	public void addImage(Image image) {
 		imageRepository.save(image);
+	}
+
+	@Transactional
+	public void addImages(List<Image> images) throws Exception {
+		imageRepository.saveAll(images);
+		throw new Exception("error");
 	}
 
 }
